@@ -3,7 +3,7 @@ class Profile {
   final String email;
   final String fullName;
   final String? phone;
-  final String role; // 'admin', 'seller', etc.
+  final String role; 
   final String? avatarUrl;
   final bool isActive;
   final DateTime createdAt;
@@ -23,13 +23,13 @@ class Profile {
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
-      id: json['id'] as String,
-      email: json['email'] as String,
-      fullName: json['full_name'] as String,
-      phone: json['phone'] as String?,
-      role: json['role'] as String? ?? 'seller',
+      id:        json['id'] as String,
+      email:     json['email'] as String,
+      fullName:  json['full_name'] as String,
+      phone:     json['phone'] as String?,
+      role:      json['role'] as String? ?? 'seller',
       avatarUrl: json['avatar_url'] as String?,
-      isActive: json['is_active'] as bool? ?? true,
+      isActive:  json['is_active'] as bool? ?? true,
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -37,13 +37,13 @@ class Profile {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'email': email,
-      'full_name': fullName,
-      'phone': phone,
-      'role': role,
+      'id':         id,
+      'email':      email,
+      'full_name':  fullName,
+      'phone':      phone,
+      'role':       role,
       'avatar_url': avatarUrl,
-      'is_active': isActive,
+      'is_active':  isActive,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };

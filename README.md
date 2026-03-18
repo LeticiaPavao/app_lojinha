@@ -1,6 +1,6 @@
-# app_padrao
+# Lojinha de Produtos 
 
-A new Flutter project.
+
 
 ## Getting Started
 

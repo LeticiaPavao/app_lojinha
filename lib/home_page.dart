@@ -1,9 +1,12 @@
-import 'package:app_padrao/providers/auth_provider.dart';
-import 'package:app_padrao/views/carrinho/carrinho_page.dart';
-import 'package:app_padrao/views/mapa/mapa.dart';
-import 'package:app_padrao/views/produtos/produtos_page.dart';
+//& Imports packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+//& Imports providers
+import 'package:app_lojinha/providers/auth_provider.dart';
+//& Imports views
+import 'package:app_lojinha/views/map/map.dart';
+import 'package:app_lojinha/views/cart/cart_page.dart';
+import 'package:app_lojinha/views/products/products_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,12 +19,11 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static const List<Widget> _telas = <Widget>[
-    ProdutosPage(),
-    CarrinhoPage(),
-    Center(child: Text('Perfil (em construção)')), // futura tela de perfil
+    ProductsPage(),
+    CartPage(),
+    Center(child: Text('Perfil (em construção)')),
   ];
 
-  // Método auxiliar para logout (evita duplicação)
   Future<void> _logout(BuildContext context, AuthProvider auth) async {
     await auth.signOut();
     if (mounted) {
@@ -43,7 +45,7 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const MapaPage()),
+                MaterialPageRoute(builder: (context) => const MapPage()),
               );
             },
           ),
@@ -57,19 +59,18 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            
             if (user != null)
               UserAccountsDrawerHeader(
                 accountName: Text(user.email ?? 'Usuário'),
                 accountEmail: Text(user.email ?? ''),
                 currentAccountPicture: const CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Icon(Icons.person, color: Colors.blue),
+                  child: Icon(Icons.person, color: Colors.purple),
                 ),
               )
             else
               const DrawerHeader(
-                decoration: BoxDecoration(color: Colors.blue),
+                decoration: BoxDecoration(color: Colors.purple),
                 child: Center(
                   child: Text(
                     'App de Vendas',
@@ -100,7 +101,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const MapaPage()),
+                  MaterialPageRoute(builder: (context) => const MapPage()),
                 );
               },
             ),
@@ -129,8 +130,14 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag), label: 'Produtos'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Carrinho'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_bag),
+            label: 'Produtos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Carrinho',
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
       ),

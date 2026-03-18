@@ -1,5 +1,6 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+//& Imports packages
 import 'supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
   final _supabase = SupabaseService().client;
@@ -31,6 +32,6 @@ class AuthService {
   }
 
   User? get currentUser => _supabase.auth.currentUser;
-  
+
   Stream<AuthState> get authState => _supabase.auth.onAuthStateChange;
 }

@@ -1,13 +1,19 @@
-import 'package:app_padrao/providers/auth_provider.dart';
-import 'package:app_padrao/providers/carrinho_provider.dart';
-import 'package:app_padrao/services/services/notification_service.dart';
-import 'package:app_padrao/views/auth/login_page.dart';
-import 'package:app_padrao/views/user/cadastro_view.dart';
+//& Imports packages
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
-import 'home_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_web/webview_flutter_web.dart';
+//& Imports providers
+import 'package:provider/provider.dart';
+import 'package:app_lojinha/providers/auth_provider.dart';
+import 'package:app_lojinha/providers/cart_provider.dart';
+//& Imports views
+import 'home_page.dart';
+import 'package:app_lojinha/views/auth/login_page.dart';
+import 'package:app_lojinha/views/user/cadastro_view.dart';
+//& Imports services
+import 'package:app_lojinha/services/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,11 +29,13 @@ void main() async {
     anonKey: dotenv.env['API_KEY']!,
   );
 
+  WebViewPlatform.instance = WebWebViewPlatform();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => CarrinhoProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()),
       ],
       child: const MyApp(),
     ),
@@ -45,7 +53,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => LoginPage(),
-        '/cadastro': (context) => CadastroPage(),
+        '/cadastro': (context) => RegisterPage(),
         '/home': (context) => const HomePage(),
       },
     );

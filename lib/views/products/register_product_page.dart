@@ -1,48 +1,50 @@
-import 'package:app_padrao/services/services/produto_service.dart';
+//& Imports packages
 import 'package:flutter/material.dart';
-import '../../models/produto.dart';
+//& Imports models
+import '../../models/product.dart';
+//& Imports services
+import 'package:app_lojinha/services/services/product_service.dart';
 
-
-class CadastroProdutoPage extends StatefulWidget {
-  const CadastroProdutoPage({super.key});
+class RegisterProductPage extends StatefulWidget {
+  const RegisterProductPage({super.key});
 
   @override
-  State<CadastroProdutoPage> createState() => _CadastroProdutoPageState();
+  State<RegisterProductPage> createState() => _RegisterProductPageState();
 }
 
-class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
+class _RegisterProductPageState extends State<RegisterProductPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nomeController = TextEditingController();
-  final _precoController = TextEditingController();
-  final _descricaoController = TextEditingController();
-  final _imagemUrlController = TextEditingController();
-  final _categoriaController = TextEditingController();
-  final _estoqueController = TextEditingController();
-  final _fornecedorController = TextEditingController();
-  final _pesoController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _imageUrlController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _stockController = TextEditingController();
+  final _supplierController = TextEditingController();
+  final _weightController = TextEditingController();
 
-  DateTime? _dataValidade;
-  String _unidadeMedida = 'un'; // valor padrão
+  DateTime? _expiryDate;
+  String _unitOfMeasure = 'un';
   bool _isActive = true;
 
-  final List<String> _unidades = ['un', 'kg', 'g', 'l', 'ml', 'cx'];
+  final List<String> _units = ['un', 'kg', 'g', 'l', 'ml', 'cx'];
 
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _nomeController.dispose();
-    _precoController.dispose();
-    _descricaoController.dispose();
-    _imagemUrlController.dispose();
-    _categoriaController.dispose();
-    _estoqueController.dispose();
-    _fornecedorController.dispose();
-    _pesoController.dispose();
+    _nameController.dispose();
+    _priceController.dispose();
+    _descriptionController.dispose();
+    _imageUrlController.dispose();
+    _categoryController.dispose();
+    _stockController.dispose();
+    _supplierController.dispose();
+    _weightController.dispose();
     super.dispose();
   }
 
-  Future<void> _selecionarData(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -51,42 +53,42 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
     );
     if (picked != null) {
       setState(() {
-        _dataValidade = picked;
+        _expiryDate = picked;
       });
     }
   }
 
-  Future<void> _salvarProduto() async {
+  Future<void> _registerProduct() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      final produto = Produto(
-        id: '', 
-        nome: _nomeController.text,
-        preco: double.parse(_precoController.text),
-        descricao: _descricaoController.text.isEmpty
+      final produto = Product(
+        id: '',
+        name: _nameController.text,
+        price: double.parse(_priceController.text),
+        description: _descriptionController.text.isEmpty
             ? null
-            : _descricaoController.text,
-        imagemUrl: _imagemUrlController.text.isEmpty
+            : _descriptionController.text,
+        imageUrl: _imageUrlController.text.isEmpty
             ? null
-            : _imagemUrlController.text,
-        categoria: _categoriaController.text,
-        estoque: int.parse(_estoqueController.text),
-        dataValidade: _dataValidade,
-        fornecedor: _fornecedorController.text,
-        peso: _pesoController.text.isEmpty
+            : _imageUrlController.text,
+        category: _categoryController.text,
+        stock: int.parse(_stockController.text),
+        expiryDate: _expiryDate,
+        supplier: _supplierController.text,
+        weight: _weightController.text.isEmpty
             ? null
-            : double.parse(_pesoController.text),
-        unidadeMedida: _unidadeMedida,
+            : double.parse(_weightController.text),
+        unitOfMeasure: _unitOfMeasure,
         isActive: _isActive,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      final produtoService = ProdutoService();
-      await produtoService.criarProduto(produto);
+      final produtoService = ProductService();
+      await produtoService.createProduct(produto);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -96,9 +98,9 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao cadastrar: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao cadastrar: $e')));
       }
     } finally {
       setState(() => _isLoading = false);
@@ -108,9 +110,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cadastrar Produto'),
-      ),
+      appBar: AppBar(title: const Text('Cadastrar Produto')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -118,9 +118,9 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
           child: ListView(
             children: [
               TextFormField(
-                controller: _nomeController,
+                controller: _nameController,
                 decoration: const InputDecoration(
-                  labelText: 'Nome do Produto *',
+                  labelText: 'Name do Produto *',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) =>
@@ -128,7 +128,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _precoController,
+                controller: _priceController,
                 decoration: const InputDecoration(
                   labelText: 'Preço (R\$) *',
                   border: OutlineInputBorder(),
@@ -146,7 +146,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _descricaoController,
+                controller: _descriptionController,
                 decoration: const InputDecoration(
                   labelText: 'Descrição',
                   border: OutlineInputBorder(),
@@ -155,15 +155,15 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _imagemUrlController,
+                controller: _imageUrlController,
                 decoration: const InputDecoration(
-                  labelText: 'URL da Imagem',
+                  labelText: 'URL da Image',
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _categoriaController,
+                controller: _categoryController,
                 decoration: const InputDecoration(
                   labelText: 'Categoria *',
                   border: OutlineInputBorder(),
@@ -173,7 +173,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _estoqueController,
+                controller: _stockController,
                 decoration: const InputDecoration(
                   labelText: 'Estoque *',
                   border: OutlineInputBorder(),
@@ -191,7 +191,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _fornecedorController,
+                controller: _supplierController,
                 decoration: const InputDecoration(
                   labelText: 'Fornecedor *',
                   border: OutlineInputBorder(),
@@ -204,7 +204,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
                 children: [
                   Expanded(
                     child: TextFormField(
-                      controller: _pesoController,
+                      controller: _weightController,
                       decoration: const InputDecoration(
                         labelText: 'Peso',
                         border: OutlineInputBorder(),
@@ -215,20 +215,17 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      initialValue: _unidadeMedida,
+                      initialValue: _unitOfMeasure,
                       decoration: const InputDecoration(
                         labelText: 'Unidade *',
                         border: OutlineInputBorder(),
                       ),
-                      items: _unidades.map((unidade) {
-                        return DropdownMenuItem(
-                          value: unidade,
-                          child: Text(unidade),
-                        );
+                      items: _units.map((unit) {
+                        return DropdownMenuItem(value: unit, child: Text(unit));
                       }).toList(),
                       onChanged: (value) {
                         setState(() {
-                          _unidadeMedida = value!;
+                          _unitOfMeasure = value!;
                         });
                       },
                       validator: (value) =>
@@ -242,16 +239,16 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: () => _selecionarData(context),
+                      onTap: () => _selectDate(context),
                       child: InputDecorator(
                         decoration: const InputDecoration(
-                          labelText: 'Data de Validade',
+                          labelText: 'Date de Validade',
                           border: OutlineInputBorder(),
                         ),
                         child: Text(
-                          _dataValidade == null
-                              ? 'Selecionar data'
-                              : '${_dataValidade!.day}/${_dataValidade!.month}/${_dataValidade!.year}',
+                          _expiryDate == null
+                              ? 'Selecione a data de validade'
+                              : '${_expiryDate!.day}/${_expiryDate!.month}/${_expiryDate!.year}',
                         ),
                       ),
                     ),
@@ -274,7 +271,7 @@ class _CadastroProdutoPageState extends State<CadastroProdutoPage> {
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                      onPressed: _salvarProduto,
+                      onPressed: _registerProduct,
                       style: ElevatedButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                       ),

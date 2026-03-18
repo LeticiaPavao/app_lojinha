@@ -1,18 +1,21 @@
-import 'package:app_padrao/providers/auth_provider.dart';
-import 'package:app_padrao/providers/carrinho_provider.dart';
-import 'package:app_padrao/services/services/notification_service.dart';
+//& Imports packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+//& Imports providers
+import 'package:app_lojinha/providers/auth_provider.dart';
+import 'package:app_lojinha/providers/cart_provider.dart';
+//& Imports services
+import 'package:app_lojinha/services/services/notification_service.dart';
 
-class CarrinhoPage extends StatelessWidget {
-  const CarrinhoPage({super.key});
+class CartPage extends StatelessWidget {
+  const CartPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final carrinho = Provider.of<CarrinhoProvider>(context);
+    final cart = Provider.of<CartProvider>(context);
     final auth = Provider.of<AuthProvider>(context);
 
-    if (carrinho.itens.isEmpty) {
+    if (cart.itens.isEmpty) {
       return const Center(child: Text('Seu carrinho está vazio'));
     }
 
@@ -20,18 +23,18 @@ class CarrinhoPage extends StatelessWidget {
       children: [
         Expanded(
           child: ListView.builder(
-            itemCount: carrinho.itens.length,
+            itemCount: cart.itens.length,
             itemBuilder: (ctx, index) {
-              final produto = carrinho.itens[index];
+              final item = cart.itens[index];
               return ListTile(
-                leading: produto.imagemUrl != null
-                    ? Image.network(produto.imagemUrl!)
+                leading: item.imageUrl != null
+                    ? Image.network(item.imageUrl!)
                     : const Icon(Icons.broken_image, size: 50),
-                title: Text(produto.nome),
-                subtitle: Text('R\$ ${produto.preco.toStringAsFixed(2)}'),
+                title: Text(item.name),
+                subtitle: Text('R\$ ${item.price.toStringAsFixed(2)}'),
                 trailing: IconButton(
                   icon: const Icon(Icons.remove_shopping_cart),
-                  onPressed: () => carrinho.remover(produto),
+                  onPressed: () => cart.remove(item),
                 ),
               );
             },
@@ -39,12 +42,11 @@ class CarrinhoPage extends StatelessWidget {
         ),
         Container(
           padding: const EdgeInsets.all(16),
-          color: Colors.grey[200],
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total: R\$ ${carrinho.total.toStringAsFixed(2)}',
+                'Total: R\$ ${cart.total.toStringAsFixed(2)}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -53,7 +55,7 @@ class CarrinhoPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () async {
                   try {
-                    await carrinho.finalizarPedido(auth.user!.id);
+                    await cart.finishPedido(auth.user!.id);
 
                     final notificationService = NotificationService();
                     await notificationService.showNotification(
@@ -62,15 +64,23 @@ class CarrinhoPage extends StatelessWidget {
                       payload: 'order_success',
                     );
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Pedido realizado com sucesso!'),
-                      ),
-                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Pedido realizado com sucesso!'),
+                        ),
+                      );
+                    }
                   } catch (e) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text('Erro: $e')));
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Erro ao finalizar pedido. Tente novamente.',
+                          ),
+                        ),
+                      );
+                    }
                   }
                 },
                 child: const Text('Finalizar Pedido'),

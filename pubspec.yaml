@@ -1,5 +1,5 @@
-name: app_padrao
-description: "A new Flutter project."
+name: app_lojinha
+description: "Projeto Lojinha - ensinando flutter"
 
 publish_to: 'none' 
 
@@ -29,7 +29,7 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_reactive_ble: ^5.3.1
   map_launcher: ^4.4.3
-  # webview_flutter_web: ^0.2.3+4
+  webview_flutter_web: ^0.2.3+4  #comentar para android
   webview_flutter: ^4.13.1
   flutter_dotenv: ^6.0.0
   supabase_flutter: ^2.12.0

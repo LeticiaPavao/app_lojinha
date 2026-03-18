@@ -1,36 +1,38 @@
-import 'package:app_padrao/providers/auth_provider.dart';
+//& Imports packages
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+//& Imports providers
+import 'package:app_lojinha/providers/auth_provider.dart';
 
-class CadastroPage extends StatefulWidget {
-  const CadastroPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<CadastroPage> createState() => _CadastroPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _CadastroPageState extends State<CadastroPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nomeController = TextEditingController();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _senhaController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    _nomeController.dispose();
+    _nameController.dispose();
     _emailController.dispose();
-    _senhaController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _cadastrar() async {
+  Future<void> _register() async {
     if (!_formKey.currentState!.validate()) return;
 
     final auth = Provider.of<AuthProvider>(context, listen: false);
     final error = await auth.signUp(
       email: _emailController.text.trim(),
-      password: _senhaController.text,
-      fullName: _nomeController.text.trim(),
+      password: _passwordController.text,
+      fullName: _nameController.text.trim(),
     );
 
     if (error == null) {
@@ -42,9 +44,9 @@ class _CadastroPageState extends State<CadastroPage> {
       }
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro: $error')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro: $error')));
       }
     }
   }
@@ -54,9 +56,7 @@ class _CadastroPageState extends State<CadastroPage> {
     final auth = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cadastro'),
-      ),
+      appBar: AppBar(title: const Text('Cadastro')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -64,7 +64,7 @@ class _CadastroPageState extends State<CadastroPage> {
           child: Column(
             children: [
               TextFormField(
-                controller: _nomeController,
+                controller: _nameController,
                 decoration: const InputDecoration(labelText: 'Nome completo'),
                 validator: (v) => v!.isEmpty ? 'Campo obrigatório' : null,
               ),
@@ -75,7 +75,7 @@ class _CadastroPageState extends State<CadastroPage> {
                 validator: (v) => v!.contains('@') ? null : 'E-mail inválido',
               ),
               TextFormField(
-                controller: _senhaController,
+                controller: _passwordController,
                 decoration: const InputDecoration(labelText: 'Senha'),
                 obscureText: true,
                 validator: (v) => v!.length < 6 ? 'Mínimo 6 caracteres' : null,
@@ -84,7 +84,7 @@ class _CadastroPageState extends State<CadastroPage> {
               auth.isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _cadastrar,
+                      onPressed: _register,
                       child: const Text('Cadastrar'),
                     ),
               TextButton(

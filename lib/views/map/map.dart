@@ -1,14 +1,15 @@
+//& Imports packages
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart'; 
+import 'package:webview_flutter/webview_flutter.dart';
 
-class MapaPage extends StatefulWidget {
-  const MapaPage({super.key});
+class MapPage extends StatefulWidget {
+  const MapPage({super.key});
 
   @override
-  State<MapaPage> createState() => _MapaPageState();
+  State<MapPage> createState() => _MapPageState();
 }
 
-class _MapaPageState extends State<MapaPage> {
+class _MapPageState extends State<MapPage> {
   late final WebViewController _controller;
 
   @override
@@ -31,15 +32,14 @@ class _MapaPageState extends State<MapaPage> {
     ''';
 
     _controller = WebViewController()
+      //..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadHtmlString(htmlContent);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Localização da Loja'),
-      ),
+      appBar: AppBar(title: const Text('Localização da Loja')),
       body: WebViewWidget(controller: _controller),
     );
   }

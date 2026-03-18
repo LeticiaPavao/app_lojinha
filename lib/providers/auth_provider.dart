@@ -1,7 +1,8 @@
-import 'package:app_padrao/services/services/auth_service.dart';
+//& Imports packages
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+//& Imports services
+import 'package:app_lojinha/services/services/auth_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -32,9 +33,9 @@ class AuthProvider extends ChangeNotifier {
         userData: {'full_name': fullName},
       );
       _user = response.user;
-      return null; // sem erro
+      return null; 
     } catch (e) {
-      return e.toString(); // retorna mensagem de erro
+      return e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();

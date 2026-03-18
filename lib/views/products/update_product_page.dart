@@ -1,50 +1,53 @@
+//& Imports packages
 import 'package:flutter/material.dart';
-import 'package:app_padrao/models/produto.dart';
-import 'package:app_padrao/services/services/produto_service.dart';
+//& Imports models
+import 'package:app_lojinha/models/product.dart';
+//& Imports services
+import 'package:app_lojinha/services/services/product_service.dart';
 
-class EditarProdutoPage extends StatefulWidget {
-  final String produtoId;
+class UpdateProductPage extends StatefulWidget {
+  final String productId;
 
-  const EditarProdutoPage({super.key, required this.produtoId});
+  const UpdateProductPage({super.key, required this.productId});
 
   @override
-  State<EditarProdutoPage> createState() => _EditarProdutoPageState();
+  State<UpdateProductPage> createState() => _UpdateProductPageState();
 }
 
-class _EditarProdutoPageState extends State<EditarProdutoPage> {
+class _UpdateProductPageState extends State<UpdateProductPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nomeController = TextEditingController();
-  final _precoController = TextEditingController();
-  final _descricaoController = TextEditingController();
-  final _imagemUrlController = TextEditingController();
-  final _categoriaController = TextEditingController();
-  final _estoqueController = TextEditingController();
-  final _fornecedorController = TextEditingController();
-  final _pesoController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _imageUrlController = TextEditingController();
+  final _categoryController = TextEditingController();
+  final _stockController = TextEditingController();
+  final _supplierController = TextEditingController();
+  final _weightController = TextEditingController();
   final _createdAt = TextEditingController();
 
-  DateTime? _dataValidade;
-  String _unidadeMedida = 'un';
+  DateTime? _expiryDate;
+  String _unitOfMeasure = 'un';
   bool _isActive = true;
 
-  final List<String> _unidades = ['un', 'kg', 'g', 'l', 'ml', 'cx'];
+  final List<String> _unit = ['un', 'kg', 'g', 'l', 'ml', 'cx'];
 
   bool _isLoading = true;
   bool _isSaving = false;
   String? _errorMessage;
 
-  final produtoService = ProdutoService();
+  final productService = ProductService();
 
   @override
   void initState() {
     super.initState();
-    _carregarProduto();
+    _getProduct();
   }
 
-  Future<void> _carregarProduto() async {
+  Future<void> _getProduct() async {
     try {
-      final produto = await produtoService.getProduto(widget.produtoId);
-      if (produto == null) {
+      final product = await productService.getProduct(widget.productId);
+      if (product == null) {
         setState(() {
           _errorMessage = 'Produto não encontrado';
           _isLoading = false;
@@ -52,18 +55,18 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
         return;
       }
 
-      _nomeController.text = produto.nome;
-      _precoController.text = produto.preco.toString();
-      _descricaoController.text = produto.descricao ?? '';
-      _imagemUrlController.text = produto.imagemUrl ?? '';
-      _categoriaController.text = produto.categoria;
-      _estoqueController.text = produto.estoque.toString();
-      _fornecedorController.text = produto.fornecedor;
-      _pesoController.text = produto.peso?.toString() ?? '';
-      _dataValidade = produto.dataValidade;
-      _unidadeMedida = produto.unidadeMedida;
-      _isActive = produto.isActive;
-      _createdAt.text = produto.createdAt.toIso8601String();
+      _nameController.text = product.name;
+      _priceController.text = product.price.toString();
+      _descriptionController.text = product.description ?? '';
+      _imageUrlController.text = product.imageUrl ?? '';
+      _categoryController.text = product.category;
+      _stockController.text = product.stock.toString();
+      _supplierController.text = product.supplier;
+      _weightController.text = product.weight?.toString() ?? '';
+      _expiryDate = product.expiryDate;
+      _unitOfMeasure = product.unitOfMeasure;
+      _isActive = product.isActive;
+      _createdAt.text = product.createdAt.toIso8601String();
 
       setState(() {
         _isLoading = false;
@@ -76,44 +79,44 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
     }
   }
 
-  Future<void> _selecionarData(BuildContext context) async {
+  Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: _dataValidade ?? DateTime.now(),
+      initialDate: _expiryDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
-        _dataValidade = picked;
+        _expiryDate = picked;
       });
     }
   }
 
-  Future<void> _salvarProduto() async {
+  Future<void> _salveProduct() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isSaving = true);
 
     try {
-      final produto = Produto(
-        id: widget.produtoId,
-        nome: _nomeController.text,
-        preco: double.parse(_precoController.text),
-        descricao: _descricaoController.text.isEmpty
+      final product = Product(
+        id: widget.productId,
+        name: _nameController.text,
+        price: double.parse(_priceController.text),
+        description: _descriptionController.text.isEmpty
             ? null
-            : _descricaoController.text,
-        imagemUrl: _imagemUrlController.text.isEmpty
+            : _descriptionController.text,
+        imageUrl: _imageUrlController.text.isEmpty
             ? null
-            : _imagemUrlController.text,
-        categoria: _categoriaController.text,
-        estoque: int.parse(_estoqueController.text),
-        dataValidade: _dataValidade,
-        fornecedor: _fornecedorController.text,
-        peso: _pesoController.text.isEmpty
+            : _imageUrlController.text,
+        category: _categoryController.text,
+        stock: int.parse(_stockController.text),
+        expiryDate: _expiryDate,
+        supplier: _supplierController.text,
+        weight: _weightController.text.isEmpty
             ? null
-            : double.parse(_pesoController.text),
-        unidadeMedida: _unidadeMedida,
+            : double.parse(_weightController.text),
+        unitOfMeasure: _unitOfMeasure,
         isActive: _isActive,
         createdAt: _createdAt.text.isEmpty
             ? DateTime.now()
@@ -121,7 +124,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
         updatedAt: DateTime.now(),
       );
 
-      await produtoService.atualizarProduto(produto);
+      await productService.updateProduct(product);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -142,14 +145,14 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
 
   @override
   void dispose() {
-    _nomeController.dispose();
-    _precoController.dispose();
-    _descricaoController.dispose();
-    _imagemUrlController.dispose();
-    _categoriaController.dispose();
-    _estoqueController.dispose();
-    _fornecedorController.dispose();
-    _pesoController.dispose();
+    _nameController.dispose();
+    _priceController.dispose();
+    _descriptionController.dispose();
+    _imageUrlController.dispose();
+    _categoryController.dispose();
+    _stockController.dispose();
+    _supplierController.dispose();
+    _weightController.dispose();
     _createdAt.dispose();
     super.dispose();
   }
@@ -180,7 +183,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                 child: ListView(
                   children: [
                     TextFormField(
-                      controller: _nomeController,
+                      controller: _nameController,
                       decoration: const InputDecoration(
                         labelText: 'Nome do Produto *',
                         border: OutlineInputBorder(),
@@ -191,7 +194,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _precoController,
+                      controller: _priceController,
                       decoration: const InputDecoration(
                         labelText: 'Preço (R\$) *',
                         border: OutlineInputBorder(),
@@ -209,7 +212,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _descricaoController,
+                      controller: _descriptionController,
                       decoration: const InputDecoration(
                         labelText: 'Descrição',
                         border: OutlineInputBorder(),
@@ -218,7 +221,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _imagemUrlController,
+                      controller: _imageUrlController,
                       decoration: const InputDecoration(
                         labelText: 'URL da Imagem',
                         border: OutlineInputBorder(),
@@ -226,7 +229,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _categoriaController,
+                      controller: _categoryController,
                       decoration: const InputDecoration(
                         labelText: 'Categoria *',
                         border: OutlineInputBorder(),
@@ -237,7 +240,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _estoqueController,
+                      controller: _stockController,
                       decoration: const InputDecoration(
                         labelText: 'Estoque *',
                         border: OutlineInputBorder(),
@@ -255,7 +258,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
-                      controller: _fornecedorController,
+                      controller: _supplierController,
                       decoration: const InputDecoration(
                         labelText: 'Fornecedor *',
                         border: OutlineInputBorder(),
@@ -269,9 +272,9 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            controller: _pesoController,
+                            controller: _weightController,
                             decoration: const InputDecoration(
-                              labelText: 'Peso',
+                              labelText: 'Peso (kg)',
                               border: OutlineInputBorder(),
                             ),
                             keyboardType: TextInputType.number,
@@ -280,12 +283,12 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: DropdownButtonFormField<String>(
-                            initialValue: _unidadeMedida,
+                            initialValue: _unitOfMeasure,
                             decoration: const InputDecoration(
                               labelText: 'Unidade *',
                               border: OutlineInputBorder(),
                             ),
-                            items: _unidades.map((unidade) {
+                            items: _unit.map((unidade) {
                               return DropdownMenuItem(
                                 value: unidade,
                                 child: Text(unidade),
@@ -293,7 +296,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                             }).toList(),
                             onChanged: (value) {
                               setState(() {
-                                _unidadeMedida = value!;
+                                _unitOfMeasure = value!;
                               });
                             },
                             validator: (value) =>
@@ -307,16 +310,16 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                       children: [
                         Expanded(
                           child: InkWell(
-                            onTap: () => _selecionarData(context),
+                            onTap: () => _selectDate(context),
                             child: InputDecorator(
                               decoration: const InputDecoration(
                                 labelText: 'Data de Validade',
                                 border: OutlineInputBorder(),
                               ),
                               child: Text(
-                                _dataValidade == null
+                                _expiryDate == null
                                     ? 'Selecionar data'
-                                    : '${_dataValidade!.day}/${_dataValidade!.month}/${_dataValidade!.year}',
+                                    : '${_expiryDate!.day}/${_expiryDate!.month}/${_expiryDate!.year}',
                               ),
                             ),
                           ),
@@ -339,7 +342,7 @@ class _EditarProdutoPageState extends State<EditarProdutoPage> {
                     _isSaving
                         ? const Center(child: CircularProgressIndicator())
                         : ElevatedButton(
-                            onPressed: _salvarProduto,
+                            onPressed: _salveProduct,
                             style: ElevatedButton.styleFrom(
                               minimumSize: const Size.fromHeight(50),
                             ),

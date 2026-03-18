@@ -1,7 +1,8 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+//& Imports packages
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, TargetPlatform;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin _notifications =
@@ -29,7 +30,7 @@ class NotificationService {
 
   Future<void> _createNotificationChannel() async {
     const androidChannel = AndroidNotificationChannel(
-      'vendas_channel', 
+      'vendas_channel',
       'Notificações de Vendas',
       description: 'Canal para notificações do app de vendas',
       importance: Importance.high,
@@ -48,15 +49,18 @@ class NotificationService {
     debugPrint('Notificação clicada: ${response.payload}');
   }
 
-  Future<void> requestPermissions() async {
+  Future<bool> requestPermissions() async {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       final result = await _notifications
           .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin
           >()
           ?.requestPermissions(alert: true, badge: true, sound: true);
-      print('Permissões iOS: $result');
+
+      return result ?? false;
     }
+
+    return false;
   }
 
   Future<void> showNotification({
@@ -64,9 +68,8 @@ class NotificationService {
     required String body,
     String? payload,
   }) async {
-
     const androidDetails = AndroidNotificationDetails(
-      'vendas_channel', 
+      'vendas_channel',
       'Notificações de Vendas',
       channelDescription: 'Canal para notificações do app de vendas',
       importance: Importance.high,
@@ -86,7 +89,7 @@ class NotificationService {
     );
 
     await _notifications.show(
-      id: 0, 
+      id: 0,
       title: title,
       body: body,
       notificationDetails: platformDetails,
